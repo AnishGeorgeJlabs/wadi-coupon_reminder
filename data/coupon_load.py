@@ -41,10 +41,18 @@ def get_data(debug=False):
     WHERE SUBSTRING(w.coupon, 1, CHAR_LENGTH(w.coupon) - 2) IN (%s)
     ORDER by users.id""" % json.dumps(codes).strip("[]")
     '''
+    '''
     c_list = "','".join(codes)
     query = """SELECT users.time,users.email,wadi_v1_coupons.coupon,wadi_v1_coupons.type
     FROM `users`,`wadi_v1_coupons` where users.id=wadi_v1_coupons.uid AND
     SUBSTRING(wadi_v1_coupons.coupon, 1, CHAR_LENGTH(wadi_v1_coupons.coupon) - 2)
+    IN ('%s') order by users.id"""% (c_list)
+    '''
+
+    c_list = "|".join(codes)
+    query = """SELECT users.time,users.email,wadi_v1_coupons.coupon,wadi_v1_coupons.type
+    FROM `users`,`wadi_v1_coupons` where users.id=wadi_v1_coupons.uid AND
+    wadi_v1_coupons.coupon REGEXP '%'
     IN ('%s') order by users.id"""% (c_list)
 
     if debug is True:
