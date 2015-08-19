@@ -1,6 +1,6 @@
 from data import execute_fn_dabba, execute_fn_referaly
 import requests
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 
 def get_days():
@@ -17,7 +17,7 @@ def get_days():
             return int(data['value'])
 
 def get_codes(days):
-    max_date = (datetime.now() + datetime.timedelta(days=days)).strftime('%Y-%m-%d')
+    max_date = (datetime.now() + timedelta(days=days)).strftime('%Y-%m-%d')
     query = """
     SELECT code FROM sales_rule
     WHERE is_active = 1 AND date(to_date) LIKE '%s'""" % max_date
