@@ -20,7 +20,7 @@ def get_codes(days, debug=False):
     if not debug:
         max_date = (datetime.now() + timedelta(days=days)).strftime('%Y-%m-%d')
     else:
-        max_date = '2015-07-31'
+        max_date = '2015-05-31'
 
     query = """
     SELECT code FROM sales_rule
@@ -34,11 +34,18 @@ def get_codes(days, debug=False):
 def get_data(debug=False):
     codes = get_codes(get_days(), debug)
 
+    '''
     query = """
     SELECT users.time, users.email, w.coupon, w.type
     FROM users JOIN wadi_v1_coupons w on users.id=w.uid
     WHERE SUBSTRING(w.coupon, 1, CHAR_LENGTH(w.coupon) - 2) IN (%s)
     ORDER by users.id""" % json.dumps(codes).strip("[]")
+    '''
+    c_list = "','".join(codes)
+    query = """SELECT users.time,users.email,wadi_v1_coupons.coupon,wadi_v1_coupons.type
+    FROM `users`,`wadi_v1_coupons` where users.id=wadi_v1_coupons.uid AND
+    SUBSTRING(wadi_v1_coupons.coupon, 1, CHAR_LENGTH(wadi_v1_coupons.coupon) - 2)
+    IN ('%s') order by users.id LIMIT 5"""% (c_list)
 
     if debug is True:
         query += " limit 10"
