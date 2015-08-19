@@ -37,7 +37,8 @@ def get_data(debug=False):
     query = """
     SELECT users.time, users.email, w.coupons, w.type
     FROM users JOIN wadi_v1_coupons w on users.id=w.uid
-    WHERE SUBSTRING(w.coupon, 1, CHAR_LENGTH(w.coupon) - 2) IN (%s) """ % json.dumps(codes).strip("[]")
+    WHERE SUBSTRING(w.coupon, 1, CHAR_LENGTH(w.coupon) - 2) IN (%s)
+    ORDER by users.id""" % json.dumps(codes).strip("[]")
 
     if debug is True:
         query += " limit 10"
