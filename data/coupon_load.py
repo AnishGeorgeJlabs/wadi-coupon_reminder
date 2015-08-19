@@ -16,8 +16,12 @@ def get_days():
         else:
             return int(data['value'])
 
-def get_codes(days):
-    max_date = (datetime.now() + timedelta(days=days)).strftime('%Y-%m-%d')
+def get_codes(days, debug=False):
+    if not debug:
+        max_date = (datetime.now() + timedelta(days=days)).strftime('%Y-%m-%d')
+    else:
+        max_date = '2015-07-31'
+
     query = """
     SELECT code FROM sales_rule
     WHERE is_active = 1 AND date(to_date) LIKE '%s'""" % max_date
