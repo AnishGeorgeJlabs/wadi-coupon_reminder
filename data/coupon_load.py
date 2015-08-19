@@ -39,4 +39,7 @@ def get_data(debug=False):
     FROM users JOIN wadi_v1_coupons w on users.id=w.uid
     WHERE SUBSTRING(w.coupon, 1, CHAR_LENGTH(w.coupon) - 2) IN (%s) """ % json.dumps(codes).strip("[]")
 
+    if debug is True:
+        query += " limit 10"
+
     return execute_on_referaly(query)
