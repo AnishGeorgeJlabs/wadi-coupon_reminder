@@ -52,8 +52,8 @@ def get_data(debug=False):
     c_list = "|".join(codes)
     query = """SELECT users.time,users.email,wadi_v1_coupons.coupon,wadi_v1_coupons.type
     FROM `users`,`wadi_v1_coupons` where users.id=wadi_v1_coupons.uid AND
-    wadi_v1_coupons.coupon REGEXP '%'
-    IN ('%s') order by users.id"""% (c_list)
+    wadi_v1_coupons.coupon REGEXP '%s'
+    order by users.id"""% (c_list)
 
     if debug is True:
         query += " limit 10"
