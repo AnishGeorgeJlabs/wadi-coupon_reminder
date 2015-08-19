@@ -1,4 +1,4 @@
-from data import execute_fn_dabba, execute_fn_referaly
+from data import execute_fn_dabba, execute_on_referaly
 import requests
 from datetime import datetime, timedelta
 import json
@@ -30,3 +30,13 @@ def get_codes(days, debug=False):
     table += execute_fn_dabba("bob_live_ae")(query)
 
     return map(lambda k: k[0], table)
+
+def get_data(debug=False):
+    codes = get_codes(get_days(), debug)
+
+    query = """
+    SELECT users.time, users.email, w.coupons, w.type
+    FROM users JOIN wadi_v1_coupons w on users.id=w.uid
+    WHERE SUBSTRING(w.coupon, 1, CHAR_LENGTH(w.coupon) - 2) IN '%' """ % "','".join(codes)
+
+    return execute_on_referaly(query)

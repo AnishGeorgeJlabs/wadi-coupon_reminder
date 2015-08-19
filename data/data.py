@@ -37,5 +37,5 @@ def execute(con):
 def execute_fn_dabba(db):
     return execute("dabba")(db)
 
-def execute_fn_referaly(db):
-    return execute("referaly")(db)
+execute_on_referaly = execute("referaly")("referaly")
+
