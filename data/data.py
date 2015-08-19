@@ -34,3 +34,8 @@ def execute(con):
         return execute_query
     return execute_on_db
 
+def execute_fn_dabba(db):
+    return execute("dabba")(db)
+
+def execute_fn_referaly(db):
+    return execute("referaly")(db)
