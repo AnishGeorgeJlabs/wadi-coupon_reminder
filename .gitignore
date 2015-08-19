@@ -7,7 +7,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-env/
+temp
 build/
 develop-eggs/
 dist/
