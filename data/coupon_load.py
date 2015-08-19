@@ -35,7 +35,7 @@ def get_data(debug=False):
     codes = get_codes(get_days(), debug)
 
     query = """
-    SELECT users.time, users.email, w.coupons, w.type
+    SELECT users.time, users.email, w.coupon, w.type
     FROM users JOIN wadi_v1_coupons w on users.id=w.uid
     WHERE SUBSTRING(w.coupon, 1, CHAR_LENGTH(w.coupon) - 2) IN (%s)
     ORDER by users.id""" % json.dumps(codes).strip("[]")
