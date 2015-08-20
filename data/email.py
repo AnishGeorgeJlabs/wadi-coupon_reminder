@@ -1,15 +1,15 @@
 import sendgrid
 from data import load_json
+from . import sendgrid_conf
 
-conf = load_json('sendgrid_conf.json')
-if not conf:
-    conf = {
+if not sendgrid_conf:
+    sendgrid_conf = {
         'username': 'blah',
         'password': 'blah'
     }
 
 
-_sclient = sendgrid.SendGridClient(username_or_apikey=conf['username'], password=conf['password'])
+_sclient = sendgrid.SendGridClient(username_or_apikey=sendgrid_conf['username'], password=sendgrid_conf['password'])
 
 def send_mail(email_id, subject, body):
     email = sendgrid.Mail()
