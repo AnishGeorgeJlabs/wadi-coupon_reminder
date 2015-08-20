@@ -2,13 +2,24 @@ import pymysql
 import json
 import os
 
+def load_json(file):
+    cdir = os.path.dirname(__file__)
+    filename = os.path.join(cdir, file)
+    try:
+        with open(filename, 'r') as cfile:
+            return json.loads(cfile.read())
+    except Exception:
+        return {}
+
+'''
 def _get_conf():
     cdir = os.path.dirname(__file__)
     filename = os.path.join(cdir, 'sql_conf.json')
     with open(filename, 'r') as cfile:
         return json.loads(cfile.read())
+'''
 
-_conf = _get_conf()
+_conf = load_json('sql_conf.json')
 
 
 # ----------- Blocking methods ---------------- #
