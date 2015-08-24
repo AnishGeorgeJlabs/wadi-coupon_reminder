@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 import json
 
 def get_days():
+    """ Get the number of days configuration from external server """
     default = 5
     url = "http://45.55.72.208/wadi/configuration/coupon_reminder/days_limit"
     response = requests.get(url)
@@ -35,14 +36,8 @@ def get_data(debug=False):
     codes = get_codes(get_days(), debug)
 
     c_list = "','".join(codes)
-    '''
-    query = """SELECT users.time,users.email,wadi_v1_coupons.coupon,wadi_v1_coupons.type
-    FROM users,wadi_v1_coupons where users.id=wadi_v1_coupons.uid AND
-    SUBSTRING(wadi_v1_coupons.coupon, 1, CHAR_LENGTH(wadi_v1_coupons.coupon) - 2)
-    IN ('%s') order by users.id""" % (c_list)
-    '''
 
-    query = """SELECT users.time,users.email,wadi_v1_coupons.coupon,wadi_v1_coupons.type
+    query = """SELECT users.email,users.time,wadi_v1_coupons.coupon,wadi_v1_coupons.type
     FROM users,wadi_v1_coupons where users.id=wadi_v1_coupons.uid AND
     REPLACE(REPLACE(wadi_v1_coupons.coupon, '\r', ''), '\n', '')
     IN ('%s') order by users.id""" % (c_list)
@@ -52,3 +47,19 @@ def get_data(debug=False):
         query += " limit 10"
 
     return execute_on_referaly(query)
+
+def convert_data(records):
+    """
+    converts the given table into dictionary of user emails against code data
+    Preliminary code
+    :param records: A List of lists
+    :return:
+    """
+
+    res = {}
+    for record in records:
+        email = record[0]
+        if email in res:
+            res[email].append(record[1:])
+        else:
+            res[email] = [record[1:]]
