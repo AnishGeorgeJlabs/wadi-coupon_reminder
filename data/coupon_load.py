@@ -63,3 +63,4 @@ def convert_data(records):
             res[email].append(record[1:])
         else:
             res[email] = [record[1:]]
+    return res
