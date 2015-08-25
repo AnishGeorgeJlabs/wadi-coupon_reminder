@@ -14,6 +14,7 @@ def get_data(debug=False):
     """
     days = get_days()
     codes, data = get_codes(days, debug)
+    print "Inside get_data, codes length: "+str(len(codes))
 
     c_list = "','".join(codes)
 
@@ -31,6 +32,7 @@ def get_data(debug=False):
         query += " limit 10"
 
     rdata = execute_on_referaly(query)
+    print "Inside get_data, referaly result length"+str(len(rdata))
     for record in rdata:
         record += data[record[1]]
 
@@ -111,6 +113,7 @@ def _transform(record):
         coupon_condition = unserialize(cdata[5])
         subtotal = _sanitize(coupon_condition['Subtotal']) + " " + currency
     except:
+        print "Transformation, dropping 1"
         return []
 
     discount_type = cdata[2]
