@@ -3,6 +3,7 @@ import requests
 from datetime import datetime, timedelta
 import json
 
+
 def get_days():
     """ Get the number of days configuration from external server """
     default = 5
@@ -16,6 +17,7 @@ def get_days():
             return default
         else:
             return int(data['value'])
+
 
 def get_codes(days, debug=False):
     """
@@ -53,6 +55,7 @@ def get_codes(days, debug=False):
 
     return codes, coupon_dict
 
+
 def get_data(debug=False):
     """
     Master function, get a dictionary of emails against codes data
@@ -72,6 +75,7 @@ def get_data(debug=False):
         query += " limit 10"
 
     return execute_on_referaly(query), data
+
 
 def convert_data(records):
     """
