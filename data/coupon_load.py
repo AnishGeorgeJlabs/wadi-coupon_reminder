@@ -12,7 +12,8 @@ def get_data(debug=False):
     :return:
     >> columns: email | code | currency | discount type | amount | percentage | conditions (serialized)
     """
-    codes, data = get_codes(get_days(), debug)
+    days = get_days()
+    codes, data = get_codes(days, debug)
 
     c_list = "','".join(codes)
 
@@ -36,7 +37,7 @@ def get_data(debug=False):
     rdata = filter(lambda k: len(k) > 0,
                    map(_transform, rdata))
 
-    return _convert_data(rdata)
+    return _convert_data(rdata), get_target_date(days)
 
 
 def get_days():
@@ -53,9 +54,9 @@ def get_days():
         else:
             return int(data['value'])
 
-def get_target_date():
+def get_target_date(days):
     """ Simple function to get the target expiry date """
-    return datetime.now() + timedelta(days=get_days())
+    return datetime.now() + timedelta(days=days)
 
 def get_codes(days, debug=False):
     """
@@ -67,7 +68,7 @@ def get_codes(days, debug=False):
     >> columns:  code | currency | discount type | amount | percentage | conditions (serialized)
     """
     if not debug:
-        max_date = get_target_date().strftime('%Y-%m-%d')
+        max_date = get_target_date(days).strftime('%Y-%m-%d')
     else:
         max_date = '2015-05-31'
 
