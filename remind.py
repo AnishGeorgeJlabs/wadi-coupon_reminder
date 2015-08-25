@@ -41,7 +41,7 @@ def test():
 
 def beta_test():
     from data.coupon_load import get_data
-    init_data = get_data(True)
+    init_data, d = get_data(True)
     final_data = {
         'anish.george@jlabs.co': init_data[init_data.keys()[0]]
     }
