@@ -29,7 +29,7 @@ def get_data(debug=False):
     '''
 
     if debug is True:
-        query += " limit 10"
+        query += " limit 20"
 
     rdata = execute_on_referaly(query)
     print "Inside get_data, referaly result length"+str(len(rdata))

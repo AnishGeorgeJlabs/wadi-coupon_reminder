@@ -22,13 +22,13 @@ def dtStylish(dt, f):
 
 
 
-def run(data, target_date):
+def run(data, target_date, subject="Coupon Reminder (Wadi)"):
     dt = dtStylish(target_date, "{th} %B, %Y")
     success = 0
     failure = 0
     for email_id, coupons in data.items():
         content = template.render(coupons=coupons, target=dt)
-        res = send_mail(email_id=email_id, subject="Voucher reminder from Wadi", body=content)
+        res = send_mail(email_id=email_id, subject=subject, body=content)
         if int(res[0]) == 200:
             success += 1
         else:
@@ -47,7 +47,7 @@ def test():
             }
         ]
     }
-    run(data, datetime.now() + timedelta(days=7))
+    run(data, datetime.now() + timedelta(days=7), "Test1 coupon reminder")
 
 
 def beta_test():
@@ -59,7 +59,27 @@ def beta_test():
         final_data = {
             'anish.george@jlabs.co': init_data[init_data.keys()[0]]
         }
-        run(final_data, datetime.now() + timedelta(days=20))
+        run(final_data, datetime.now() + timedelta(days=20), "Beta testing, coupon reminder")
+
+
+def final_test(emails):
+    from data.coupon_load import get_data
+    init_data, d = get_data(True)
+    n = len(emails) if len(emails) <= len(init_data) else len(init_data)
+    if n == 0:
+        print "No data !!!!"
+        return False
+
+    final_data = {}
+    for i in range(n):
+        final_data[emails[i]] = init_data[i]
+
+    if n < len(emails):
+        for email in emails[n:]:
+            final_data[email] = init_data[0]
+    run(final_data, d, "Coupon reminder final test")
+    return True
+
 
 
 if __name__ == '__main__':
