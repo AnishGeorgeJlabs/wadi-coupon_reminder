@@ -5,6 +5,9 @@ Main Module for the coupon reminder system
 from jinja2 import Environment, PackageLoader
 from data.email import send_mail
 from datetime import datetime, timedelta
+import logging
+
+logging.basicConfig(filename='./log', level=logging.DEBUG)
 
 env = Environment(loader=PackageLoader('data', 'templates'))
 template = env.get_template('email.html')
@@ -21,9 +24,17 @@ def dtStylish(dt, f):
 
 def run(data, target_date):
     dt = dtStylish(target_date, "{th} %B, %Y")
+    success = 0
+    failure = 0
     for email_id, coupons in data.items():
         content = template.render(coupons=coupons, target=dt)
-        print send_mail(email_id=email_id, subject="Voucher reminder from Wadi", body=content)
+        res = send_mail(email_id=email_id, subject="Voucher reminder from Wadi", body=content)
+        if int(res[0]) == 200:
+            success += 1
+        else:
+            failure += 1
+    logging.info("Report - %s - Success: %i, Failure: %i" % (datetime.now().strftime("%d/%m/%Y"), success, failure))
+
 
 
 def test():
@@ -52,4 +63,6 @@ def beta_test():
 
 
 if __name__ == '__main__':
-    pass
+    from data.coupon_load import get_data
+    data, tm = get_data()
+    run(data, tm)
