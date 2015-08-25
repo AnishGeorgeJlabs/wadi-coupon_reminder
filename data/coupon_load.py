@@ -53,6 +53,9 @@ def get_days():
         else:
             return int(data['value'])
 
+def get_target_date():
+    """ Simple function to get the target expiry date """
+    return datetime.now() + timedelta(days=get_days())
 
 def get_codes(days, debug=False):
     """
@@ -64,7 +67,7 @@ def get_codes(days, debug=False):
     >> columns:  code | currency | discount type | amount | percentage | conditions (serialized)
     """
     if not debug:
-        max_date = (datetime.now() + timedelta(days=days)).strftime('%Y-%m-%d')
+        max_date = get_target_date().strftime('%Y-%m-%d')
     else:
         max_date = '2015-05-31'
 
