@@ -5,6 +5,40 @@ import json
 from phpserialize import unserialize
 
 
+def get_data(debug=False):
+    """
+    Master function, get a dictionary of emails against codes data
+    :param debug: if True, will always give value
+    :return:
+    >> columns: email | code | currency | discount type | amount | percentage | conditions (serialized)
+    """
+    codes, data = get_codes(get_days(), debug)
+
+    c_list = "','".join(codes)
+
+    query = """SELECT users.email, wadi_v1_coupons.coupon
+    FROM users, wadi_v1_coupons where users.id=wadi_v1_coupons.uid AND
+    REPLACE(REPLACE(wadi_v1_coupons.coupon, '\r', ''), '\n', '')
+    IN ('%s') order by users.id""" % (c_list)
+
+    '''
+    Columns:
+    email | coupon
+    '''
+
+    if debug is True:
+        query += " limit 10"
+
+    rdata = execute_on_referaly(query)
+    for record in rdata:
+        record += data[record[1]]
+
+    rdata = filter(lambda k: len(k) > 0,
+                   map(_transform, rdata))
+
+    return _convert_data(rdata)
+
+
 def get_days():
     """ Get the number of days configuration from external server """
     default = 5
@@ -52,47 +86,19 @@ def get_codes(days, debug=False):
     return codes, coupon_dict
 
 
-def get_data(debug=False):
-    """
-    Master function, get a dictionary of emails against codes data
-    :param debug: if True, will always give value
-    :return:
-    >> columns: email | code | currency | discount type | amount | percentage | conditions (serialized)
-    """
-    codes, data = get_codes(get_days(), debug)
-
-    c_list = "','".join(codes)
-
-    query = """SELECT users.email, wadi_v1_coupons.coupon
-    FROM users, wadi_v1_coupons where users.id=wadi_v1_coupons.uid AND
-    REPLACE(REPLACE(wadi_v1_coupons.coupon, '\r', ''), '\n', '')
-    IN ('%s') order by users.id""" % (c_list)
-
-    '''
-    Columns:
-    email | coupon
-    '''
-
-    if debug is True:
-        query += " limit 10"
-
-    rdata = execute_on_referaly(query)
-    for record in rdata:
-        record += data[record[1]]
-
-    rdata = filter(lambda k: len(k) > 0,
-                   map(_transform, rdata))
-
-    return convert_data(rdata)
-
-
 def _sanitize(amount):
+    """ Simple function to turn a string like '100.00' into '100' """
     amount = str(amount)
     if '.00' in amount:
         return amount.split('.')[0]
 
 
 def _transform(record):
+    """
+    Converts the record into a 2 sized list of email id and coupon data
+    :param record:
+    :return:
+    """
     res = [record[0]]   # [email]
     cdata = record[1:]  # [ 0:code, 1:currency, 2:discount type, 3:amount, 4:percentage, 5:conditions
 
@@ -119,7 +125,7 @@ def _transform(record):
     return res
 
 
-def convert_data(records):
+def _convert_data(records):
     """
     converts the given table into dictionary of user emails against code data
     :param records: A List of lists, each sublist must be 2 items in length, the email id and the coupon data
