@@ -2,6 +2,7 @@ from data import execute_fn_dabba, execute_on_referaly
 import requests
 from datetime import datetime, timedelta
 import json
+from phpserialize import unserialize
 
 
 def get_days():
@@ -79,7 +80,39 @@ def get_data(debug=False):
     for record in rdata:
         record += data[record[1]]
 
+    rdata = filter(lambda k: len(k) > 0,
+                   map(_transform, rdata))
+
     return convert_data(rdata)
+
+
+def _transform(record):
+    res = [record[0]]           # [email]
+    cdata = record[1:]          # [ code, currency, discount type, amount, percentage, conditions
+                                #      0       1       2               3       4           5
+
+    try:
+        coupon_condition = unserialize(cdata[5])
+        subtotal = coupon_condition['Subtotal']
+    except:
+        return []
+
+    currency = cdata[1]
+    discount_type = cdata[2]
+
+    if discount_type == 'fixed':
+        amt = str(cdata[3]) + " " + str(currency)
+    else:
+        amt = str(cdata[4]).split('.')[0] + "%"
+
+    res.append({
+        'code': cdata[0],
+        'amount': amt,
+        'total': subtotal
+    })
+
+    return res
+
 
 def convert_data(records):
     """
