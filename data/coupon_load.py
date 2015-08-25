@@ -97,6 +97,8 @@ def _sanitize(amount):
     amount = str(amount)
     if '.00' in amount:
         return amount.split('.')[0]
+    else:
+        return amount
 
 
 def _transform(record):
@@ -111,8 +113,6 @@ def _transform(record):
     currency = cdata[1]
     try:
         coupon_condition = unserialize(cdata[5])
-        print "coupon condition ", coupon_condition
-        print "currency ", currency
         subtotal = _sanitize(coupon_condition['Subtotal']) + " " + str(currency)
     except:
         print "Transformation, dropping 1"
