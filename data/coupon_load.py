@@ -86,24 +86,29 @@ def get_data(debug=False):
     return convert_data(rdata)
 
 
-def _transform(record):
-    res = [record[0]]           # [email]
-    cdata = record[1:]          # [ code, currency, discount type, amount, percentage, conditions
-                                #      0       1       2               3       4           5
+def _sanitize(amount):
+    amount = str(amount)
+    if '.00' in amount:
+        return amount.split('.')[0]
 
+
+def _transform(record):
+    res = [record[0]]   # [email]
+    cdata = record[1:]  # [ 0:code, 1:currency, 2:discount type, 3:amount, 4:percentage, 5:conditions
+
+    currency = cdata[1]
     try:
         coupon_condition = unserialize(cdata[5])
-        subtotal = coupon_condition['Subtotal']
+        subtotal = _sanitize(coupon_condition['Subtotal']) + " " + currency
     except:
         return []
 
-    currency = cdata[1]
     discount_type = cdata[2]
 
     if discount_type == 'fixed':
         amt = str(cdata[3]) + " " + str(currency)
     else:
-        amt = str(cdata[4]).split('.')[0] + "%"
+        amt = _sanitize(cdata[4]) + "%"
 
     res.append({
         'code': cdata[0],
@@ -117,8 +122,7 @@ def _transform(record):
 def convert_data(records):
     """
     converts the given table into dictionary of user emails against code data
-    Preliminary code
-    :param records: A List of lists
+    :param records: A List of lists, each sublist must be 2 items in length, the email id and the coupon data
     :return:
     """
 
@@ -126,7 +130,7 @@ def convert_data(records):
     for record in records:
         email = record[0]
         if email in res:
-            res[email].append(record[1:])
+            res[email].append(record[1])
         else:
-            res[email] = [record[1:]]
+            res[email] = [record[1]]
     return res
