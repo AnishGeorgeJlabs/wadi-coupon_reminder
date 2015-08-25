@@ -18,22 +18,48 @@ def get_days():
             return int(data['value'])
 
 def get_codes(days, debug=False):
+    """
+    Get the codes data from bob_live_sa and ae
+
+    :param days: # of days for the coupon to expire
+    :param debug: if True, will always return some value as the date will be fixed
+    :return: (list, dict)
+    """
     if not debug:
         max_date = (datetime.now() + timedelta(days=days)).strftime('%Y-%m-%d')
     else:
         max_date = '2015-05-31'
 
+    '''
     query = """
     SELECT code FROM sales_rule
     WHERE is_active = 1 AND date(to_date) LIKE '%s'""" % max_date
+    '''
+
+    query = """
+    SELECT sr.code, sr.discount_amount_currency,
+           srs.discount_type, srs.discount_amount_default, srs.discount_percentage, srs.conditions_ruleset
+    FROM sales_rule sr INNER JOIN sales_rule_set srs ON sr.fk_sales_rule_set = srs.id_sales_rule_set
+    WHERE sr.is_active = 1 AND DATE(sr.to_date) LIKE '%s'
+    """ % max_date
 
     table = execute_fn_dabba("bob_live_sa")(query)
     table += execute_fn_dabba("bob_live_ae")(query)
 
-    return map(lambda k: k[0], table)
+    codes = map(lambda k: k[0], table)
+    coupon_dict = {}
+    for row in table:
+        coupon_dict[row[0]] = row[1:]
+
+    return codes, coupon_dict
 
 def get_data(debug=False):
-    codes = get_codes(get_days(), debug)
+    """
+    Master function, get a dictionary of emails against codes data
+    :param debug: if True, will always give value
+    :return:
+    """
+    codes, data = get_codes(get_days(), debug)
 
     c_list = "','".join(codes)
 
@@ -42,11 +68,10 @@ def get_data(debug=False):
     REPLACE(REPLACE(wadi_v1_coupons.coupon, '\r', ''), '\n', '')
     IN ('%s') order by users.id""" % (c_list)
 
-
     if debug is True:
         query += " limit 10"
 
-    return execute_on_referaly(query)
+    return execute_on_referaly(query), data
 
 def convert_data(records):
     """
