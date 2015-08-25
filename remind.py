@@ -23,7 +23,7 @@ def run(data, target_date):
     dt = dtStylish(target_date, "{th} %B, %Y")
     for email_id, coupons in data.items():
         content = template.render(coupons=coupons, target=dt)
-        send_mail(email_id=email_id, subject="Wadi coupon test", body=content)
+        send_mail(email_id=email_id, subject="Voucher reminder from Wadi", body=content)
 
 
 def test():
@@ -37,6 +37,15 @@ def test():
         ]
     }
     run(data, datetime.now() + timedelta(days=7))
+
+
+def beta_test():
+    from data.coupon_load import get_data
+    init_data = get_data(True)
+    final_data = {
+        'anish.george@jlabs.co': init_data[init_data.keys()[0]]
+    }
+    run(final_data, datetime.now() + timedelta(days=20))
 
 
 if __name__ == '__main__':
