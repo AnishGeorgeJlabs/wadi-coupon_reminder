@@ -111,7 +111,9 @@ def _transform(record):
     currency = cdata[1]
     try:
         coupon_condition = unserialize(cdata[5])
-        subtotal = _sanitize(coupon_condition['Subtotal']) + " " + currency
+        print "coupon condition ", coupon_condition
+        print "currency ", currency
+        subtotal = _sanitize(coupon_condition['Subtotal']) + " " + str(currency)
     except:
         print "Transformation, dropping 1"
         return []
