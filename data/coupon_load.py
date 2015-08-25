@@ -121,7 +121,7 @@ def _transform(record):
     discount_type = cdata[2]
 
     if discount_type == 'fixed':
-        amt = str(cdata[3]) + " " + str(currency)
+        amt = _sanitize(cdata[3]) + " " + str(currency)
     else:
         amt = _sanitize(cdata[4]) + "%"
 
