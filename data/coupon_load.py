@@ -26,17 +26,12 @@ def get_codes(days, debug=False):
     :param days: # of days for the coupon to expire
     :param debug: if True, will always return some value as the date will be fixed
     :return: (list, dict)
+    >> columns:  code | currency | discount type | amount | percentage | conditions (serialized)
     """
     if not debug:
         max_date = (datetime.now() + timedelta(days=days)).strftime('%Y-%m-%d')
     else:
         max_date = '2015-05-31'
-
-    '''
-    query = """
-    SELECT code FROM sales_rule
-    WHERE is_active = 1 AND date(to_date) LIKE '%s'""" % max_date
-    '''
 
     query = """
     SELECT sr.code, sr.discount_amount_currency,
@@ -61,21 +56,30 @@ def get_data(debug=False):
     Master function, get a dictionary of emails against codes data
     :param debug: if True, will always give value
     :return:
+    >> columns: email | code | currency | discount type | amount | percentage | conditions (serialized)
     """
     codes, data = get_codes(get_days(), debug)
 
     c_list = "','".join(codes)
 
-    query = """SELECT users.email,users.time,wadi_v1_coupons.coupon,wadi_v1_coupons.type
-    FROM users,wadi_v1_coupons where users.id=wadi_v1_coupons.uid AND
+    query = """SELECT users.email, wadi_v1_coupons.coupon
+    FROM users, wadi_v1_coupons where users.id=wadi_v1_coupons.uid AND
     REPLACE(REPLACE(wadi_v1_coupons.coupon, '\r', ''), '\n', '')
     IN ('%s') order by users.id""" % (c_list)
+
+    '''
+    Columns:
+    email | coupon
+    '''
 
     if debug is True:
         query += " limit 10"
 
-    return execute_on_referaly(query), data
+    rdata = execute_on_referaly(query)
+    for record in rdata:
+        record += data[record[1]]
 
+    return convert_data(rdata)
 
 def convert_data(records):
     """
