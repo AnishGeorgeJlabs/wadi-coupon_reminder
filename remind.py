@@ -54,12 +54,12 @@ def run(data, target_date, subject="Coupon Reminder (Wadi)"):
 def test():
     data = {
         'anish.george@jlabs.co': {
-            'language': 'english',
+            'language': 'arabic',
             'coupons': [
                 {
                     'code': 'WELCOMEwadi',
-                    'amount': '400 AED',
-                    'total': '100 AED'
+                    'amount': '100 AED',
+                    'total': '500 AED'
                 }
             ]
         }
