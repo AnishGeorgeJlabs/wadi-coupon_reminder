@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Wadi Coupon Reminder</title>
+</head>
+<body style="font-family:Century Gothic;margin:0 auto" align="center">
+<div style="width:600px;margin:0 auto; background-color: rgb(253, 214, 36);" align="center">
+  <div style="width:600px;margin:0 auto;background-color: rgb(253, 214, 36);" align="center">
+
+    <!--  Area for Main Image Banner -->
+    <div id="coupon_image_div" style="margin-bottom:20px; background-color: rgb(253, 214, 36);">
+      <a href="https://en-ae.wadi.com/welcome/?utm_source=newsletter&utm_campaign=CouponReminder&utm_medium=uae_english_14-07-2015&utm_term=reminder_banner"
+         target="_blank">
+        <img id="coupon_image"
+             {% if coupons|length > 1 %}
+        src="http://jlabs.co/wadi/images/coupon_email_banner_many.png"
+        {% else %}
+        src="http://jlabs.co/wadi/images/coupon_email_banner_one.png"
+        {% endif %} width="100%" border="0"> </a>
+    </div>
+    <!-- Main Image Ended -->
+  </div>
+
+
+  <!--  Area For Appending Coupon -->
+
+  <div style="width:600px;margin:0 auto;" align="center">
+    <!-- Two Coupon will appended with each iteration --->
+    <!-- Single Coupon body started -->
+    {% for coupon in coupons %}
+    <div
+        style="width:80%;margin:0 auto 10px;background:#fff;padding:10px;clear:both;overflow:auto;border:2px solid #19bcb0;border-radius:10px;">
+      <div style="width:65%;float:left;">
+        <p style="color:#000;text-align:center;font-size: 100%;font-weight: 300;margin:0;letter-spacing:0px;">
+          <b style="font-weight:700;">{{ coupon['amount'] }}</b> DISCOUNT ON <br>
+          PURCHASE OF {{ coupon['total'] }} & ABOVE
+        </p>
+      </div>
+      <div style="width:35%;float:left;background:#19bcb0;padding: 12px 0px;border-radius:5px;">
+        <p style="color:#fff;text-align:center;font-size: 70%;font-weight: 700;margin:0;letter-spacing:1px;">{{
+          coupon["code"]}}</p>
+      </div>
+    </div>
+    {% endfor %}
+
+
+    <!--- Coupon Ended -->
+
+
+    <div style="width:85%;margin:0 auto 0px;clear:both;overflow:auto;">
+      <p style="text-align:center;margin:10px 0 0;">*The
+        {% if coupons|length > 1 %}
+          vouchers are
+        {% else %}
+          voucher is
+        {% endif %}
+        valid till {{ target }}<br>
+      </p>
+    </div>
+    <div style="width:85%;margin:0 auto;clear:both;overflow:auto;">
+      <p style="text-align:center;font-size:14px;">We at Wadi are focused on creating a better shopping experience for
+        all. Now shop for your choice in electronics, fashion, beauty & health, jewelry, watches and <b
+            style="font-weight:700;">experience the difference.</b> We aim to deliver exceptional value with best prices
+        and amazing customer service.</p>
+      <p style="text-align:center;font-size:14px;">Also, Please Note, This is a DUMMY Arabic Mail, Although there is no arabic
+      in this message</p>
+
+      <p><a
+          href="https://en-ae.wadi.com/welcome/?utm_source=newsletter&utm_campaign=CouponReminder&utm_medium=uae_english_14-07-2015&utm_term=visit_now_top"
+          target="_blank"><img
+          src="https://gallery.mailchimp.com/4a1eff6a1466d21f8834d89b6/images/32db3fd2-f4a5-417d-9421-bedace925734.png"></a>
+      </p>
+    </div>
+    <p><a
+        href="https://en-ae.wadi.com/welcome/?utm_source=newsletter&utm_campaign=CouponReminder&utm_medium=uae_english_14-07-2015&utm_term=steps"
+        target="_blank" style="margin:0; padding:0;">
+      <img src="https://gallery.mailchimp.com/4a1eff6a1466d21f8834d89b6/images/5c33690d-0aac-4664-a375-bfe58aef41f9.png"
+           style="margin:0; padding:0; display:block;">
+      <img src="https://gallery.mailchimp.com/4a1eff6a1466d21f8834d89b6/images/7385011e-4af6-43a7-afd6-0b85759a0231.png"
+           style="margin:0; padding:0; display:block;">
+      <img src="https://gallery.mailchimp.com/4a1eff6a1466d21f8834d89b6/images/5782be36-d25b-48e8-af7a-c74f718811f3.png"
+           style="margin:0; padding:0; display:block;">
+      <img src="https://gallery.mailchimp.com/4a1eff6a1466d21f8834d89b6/images/db04b1e0-17f8-42b0-9e6e-16c14ab023b8.png"
+           style="margin:0; padding:0; display:block;">
+      <img src="https://gallery.mailchimp.com/4a1eff6a1466d21f8834d89b6/images/26805a58-514e-44be-9666-442be07b9a87.png"
+           style="margin:0; padding:0; display:block;">
+    </a></p>
+
+    <p><a
+        href="https://en-ae.wadi.com/welcome/?utm_source=newsletter&utm_campaign=CouponReminder&utm_medium=uae_english_14-07-2015&utm_term=visit_now_bottom"
+        target="_blank"><img
+        src="https://gallery.mailchimp.com/4a1eff6a1466d21f8834d89b6/images/32db3fd2-f4a5-417d-9421-bedace925734.png"></a>
+    </p>
+
+    <div style="width:85%;margin:0 auto 0px;clear:both;overflow:auto;">
+      <p style="margin:0;"><img
+          src="https://gallery.mailchimp.com/4a1eff6a1466d21f8834d89b6/images/ccb18aa8-866d-4d7f-a222-ede16aff4a4f.png"
+          width="100%"></p>
+
+      <div style="width:90%;margin:0 auto;clear:both;overflow:auto;padding:5px 0 0;">
+        <div style="width:56%;float:left;text-align:center;font-size:12px;"><b>CONTACT US</b><br>
+          <img
+              src="https://gallery.mailchimp.com/4a1eff6a1466d21f8834d89b6/images/8c6339c2-85dc-47f7-9555-6c6a236645cc.png"
+              border="0"> service@wadi.com <img
+              src="https://gallery.mailchimp.com/4a1eff6a1466d21f8834d89b6/images/26420236-6939-4b07-86af-fbbdfd2e679a.png"
+              border="0"> +971800449234<br>
+          <b>BUSINESS HOURS</b><br>
+          Saturday till Thursday 8 am till 8 pm (KSA Time)
+        </div>
+        <div style="width:5%;float:left;text-align:center;padding-top:7px;"><img
+            src="https://gallery.mailchimp.com/4a1eff6a1466d21f8834d89b6/images/526da793-7833-4597-908a-d8a88e4d4dcc.png">
+        </div>
+        <div style="width:38%;float:left;text-align:center;padding-top: 5px;"><b style="font-size:15px;">SEE YOU
+          AROUND</b><br>
+          <a href="https://www.facebook.com/wadi" style="text-decoration:none;"> <img
+              src="https://gallery.mailchimp.com/4a1eff6a1466d21f8834d89b6/images/e9f09c60-f646-4bd0-b4d4-b5d38875af5d.png"
+              border="0" style="padding-top: 5px;"> </a>&nbsp; <a href="https://twitter.com/wadi"
+                                                                  style="text-decoration:none;"> <img
+              src="https://gallery.mailchimp.com/4a1eff6a1466d21f8834d89b6/images/2d4724eb-24ff-4fb3-8e71-34ebe6fc8eab.png"
+              border="0" style="padding-top: 5px;"> </a>&nbsp; <a href="http://instagram.com/wadi/"
+                                                                  style="text-decoration:none;"> <img
+              src="https://gallery.mailchimp.com/4a1eff6a1466d21f8834d89b6/images/d98c56ec-c59a-4f08-9990-c2a6a55c796b.png"
+              border="0" style="padding-top: 5px;"> </a></div>
+      </div>
+      <p style="margin:0;"><img
+          src="https://gallery.mailchimp.com/4a1eff6a1466d21f8834d89b6/images/ccb18aa8-866d-4d7f-a222-ede16aff4a4f.png"
+          width="100%"></p>
+    </div>
+    <div></div>
+    <div style="width:85%;margin:0 auto;clear:both;overflow:auto;padding-bottom:20px;">
+      <p style="text-align:center;font-size:13px;color:#000;"><b style="color:#19bcb0;text-transform:uppercase;">Terms
+        and Conditions for Voucher Usage</b><br>
+        1. You can redeem a voucher only once.
+        2. You can use only one voucher per order.
+        3. The vouchers cannot be clubbed with another voucher code
+        4. Use them fast before they expire on 7th August, 2015 5. Coupon is not applicable on items on sale</p>
+
+      <p style="text-align:center;font-size:12px;color:#000;"><em>Copyright &copy; 2015 Wadi International General
+        Trading LLC, all rights reserved.</em><br>
+        <br>
+        <br>
+        <strong>Our mailing address is:</strong><br>
+        Wadi International General Trading LLC, PO Box - 111169, Dubai, United Arab Emirates<br>
+        <br>
+        <a class="utilityLink"
+           style="font-family: Helvetica,sans-serif; font-size: 13px; line-height: 16px; text-align: center; color:#251d1d; margin-right:5px;"
+           href="../../Google Drive/WDM/Email/HTML/Ongoing/July/Coupon-reminder/EN-AE/*:UPDATE_PROFILE:*">change your
+          language preference</a> <a class="utilityLink"
+                                     style="font-family: Helvetica,sans-serif; font-size: 13px; line-height: 16px; text-align: center; color:#251d1d; margin-left:5px;"
+                                     href="../../Google Drive/WDM/Email/HTML/Ongoing/July/Coupon-reminder/EN-AE/*:UNSUB:*">unsubscribe</a>
+      </p>
+
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -10,7 +10,8 @@ import logging
 logging.basicConfig(filename='./log', level=logging.DEBUG)
 
 env = Environment(loader=PackageLoader('data', 'templates'))
-template = env.get_template('email.html')
+template_en = env.get_template('email_en.html')
+template_ar = env.get_template('email_ar.html')
 
 # Some external code from stack overflow
 def ord(n):
@@ -26,6 +27,18 @@ def run(data, target_date, subject="Coupon Reminder (Wadi)"):
     dt = dtStylish(target_date, "{th} %B, %Y")
     success = 0
     failure = 0
+    for email_id, user_data in data.items():
+        if user_data['language'] == 'english':
+            template = template_en
+        else:
+            template = template_ar
+        content = template.render(coupons=user_data['coupons'], target=dt)
+        res = send_mail(email_id=email_id, subject=subject, body=content)
+        if int(res[0]) == 200:
+            success += 1
+        else:
+            failure += 1
+    '''
     for email_id, coupons in data.items():
         content = template.render(coupons=coupons, target=dt)
         res = send_mail(email_id=email_id, subject=subject, body=content)
@@ -33,19 +46,23 @@ def run(data, target_date, subject="Coupon Reminder (Wadi)"):
             success += 1
         else:
             failure += 1
+    '''
     logging.info("Report - %s - Success: %i, Failure: %i" % (datetime.now().strftime("%d/%m/%Y"), success, failure))
 
 
 
 def test():
     data = {
-        'anish.george@jlabs.co': [
-            {
-                'code': 'WELCOMEwadi',
-                'amount': '400 AED',
-                'total': '100 AED'
-            }
-        ]
+        'anish.george@jlabs.co': {
+            'language': 'english',
+            'coupons': [
+                {
+                    'code': 'WELCOMEwadi',
+                    'amount': '400 AED',
+                    'total': '100 AED'
+                }
+            ]
+        }
     }
     run(data, datetime.now() + timedelta(days=7), "Test1 coupon reminder")
 

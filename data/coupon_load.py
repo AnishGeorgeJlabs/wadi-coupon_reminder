@@ -18,14 +18,15 @@ def get_data(debug=False):
 
     c_list = "','".join(codes)
 
-    query = """SELECT users.email, wadi_v1_coupons.coupon
+    # The language in this database is in lowercase, i.e. english|arabic
+    query = """SELECT users.email, users.language, wadi_v1_coupons.coupon
     FROM users, wadi_v1_coupons where users.id=wadi_v1_coupons.uid AND
     REPLACE(REPLACE(wadi_v1_coupons.coupon, '\r', ''), '\n', '')
     IN ('%s') order by users.id""" % (c_list)
 
     '''
     Columns:
-    email | coupon
+    email | language | coupon
     '''
 
     if debug is True:
@@ -34,7 +35,7 @@ def get_data(debug=False):
     rdata = execute_on_referaly(query)
     print "Inside get_data, referaly result length"+str(len(rdata))
     for record in rdata:
-        record += data[record[1]]
+        record += data[record[2]]
 
     rdata = filter(lambda k: len(k) > 0,
                    map(_transform, rdata))
@@ -103,12 +104,12 @@ def _sanitize(amount):
 
 def _transform(record):
     """
-    Converts the record into a 2 sized list of email id and coupon data
+    Converts the record into a 2 sized list of email id, language and coupon data
     :param record:
     :return:
     """
-    res = [record[0]]   # [email]
-    cdata = record[1:]  # [ 0:code, 1:currency, 2:discount type, 3:amount, 4:percentage, 5:conditions
+    res = record[:2]   # [email, language]
+    cdata = record[2:]  # [ 0:code, 1:currency, 2:discount type, 3:amount, 4:percentage, 5:conditions
 
     currency = cdata[1]
     try:
@@ -136,6 +137,7 @@ def _transform(record):
 
 def _convert_data(records):
     """
+    TODO
     converts the given table into dictionary of user emails against code data
     :param records: A List of lists, each sublist must be 2 items in length, the email id and the coupon data
     :return:
@@ -145,7 +147,10 @@ def _convert_data(records):
     for record in records:
         email = record[0]
         if email in res:
-            res[email].append(record[1])
+            res[email]['coupons'].append(record[2])
         else:
-            res[email] = [record[1]]
+            res[email] = {
+                'language': record[1],
+                'coupons': [record[2]]
+            }
     return res
