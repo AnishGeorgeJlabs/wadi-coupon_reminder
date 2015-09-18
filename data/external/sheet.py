@@ -29,3 +29,7 @@ def _get_worksheet():
 
 def get_reminder_sheet():
     return _get_worksheet().get_worksheet(1)
+
+def get_days_remaining():
+    sheet = get_reminder_sheet()
+    return [int(x[1]) for x in sheet.get_all_values()[1:] if x[0] == 'Coupon Reminder']

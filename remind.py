@@ -6,6 +6,7 @@ from jinja2 import Environment, PackageLoader
 from data.email import send_mail
 from datetime import datetime, timedelta
 import logging
+from data.external.sheet import get_days_remaining
 
 logging.basicConfig(filename='./log', level=logging.DEBUG)
 
@@ -17,8 +18,11 @@ template_ar = env.get_template('email_ar.html')
 def ord(n):
     return str(n) + ("th" if 4 <= n % 100 <= 20 else {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th"))
 
+
 def dtStylish(dt, f):
     return dt.strftime(f).replace("{th}", ord(dt.day))
+
+
 # --------------------------------------
 
 
@@ -50,7 +54,6 @@ def run(data, target_date, subject="Coupon Reminder (Wadi)"):
     logging.info("Report - %s - Success: %i, Failure: %i" % (datetime.now().strftime("%d/%m/%Y"), success, failure))
 
 
-
 def test():
     data = {
         'anish.george@jlabs.co': {
@@ -69,6 +72,7 @@ def test():
 
 def beta_test():
     from data.coupon_load import get_data
+
     init_data, d = get_data(True)
     if len(init_data.keys()) == 0:
         print "Zero data for debugging"
@@ -81,6 +85,7 @@ def beta_test():
 
 def final_test(emails):
     from data.coupon_load import get_data
+
     init_data, d = get_data(True)
     n = len(emails) if len(emails) <= len(init_data) else len(init_data)
     if n == 0:
@@ -98,8 +103,15 @@ def final_test(emails):
     return True
 
 
+def _block_filter(data):
+    # Unimplemented
+    return data
+
 
 if __name__ == '__main__':
     from data.coupon_load import get_data
-    data, tm = get_data()
-    run(data, tm)
+
+    days = get_days_remaining()
+    for day in days:
+        data, tm = get_data(fix_days=day)
+        run(_block_filter(data), tm)

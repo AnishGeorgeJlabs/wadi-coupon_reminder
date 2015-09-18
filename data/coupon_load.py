@@ -5,14 +5,17 @@ import json
 from phpserialize import unserialize
 
 
-def get_data(debug=False):
+def get_data(debug=False, fix_days=None):
     """
     Master function, get a dictionary of emails against codes data
     :param debug: if True, will always give value
     :return:
     >> columns: email | code | currency | discount type | amount | percentage | conditions (serialized)
     """
-    days = get_days()
+    if not fix_days:
+        days = get_days()
+    else:
+        days = fix_days
     codes, data = get_codes(days, debug)
     print "Inside get_data, codes length: "+str(len(codes))
 
