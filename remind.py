@@ -113,5 +113,5 @@ if __name__ == '__main__':
 
     days = get_days_remaining()
     for day in days:
-        data, tm = get_data(fix_days=day)
+        data, tm = get_data(days_left=day)
         run(_block_filter(data), tm)
