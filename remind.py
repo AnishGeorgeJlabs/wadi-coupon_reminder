@@ -2,10 +2,11 @@
 Main Module for the coupon reminder system
 """
 
+from datetime import datetime
+import logging
+
 from jinja2 import Environment, PackageLoader
 from data.email import send_mail
-from datetime import datetime, timedelta
-import logging
 from data.external.sheet import get_days_remaining
 
 logging.basicConfig(filename='./log', level=logging.DEBUG)

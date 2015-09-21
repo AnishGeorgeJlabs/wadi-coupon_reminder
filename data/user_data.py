@@ -1,16 +1,20 @@
 from datetime import datetime
-from data import execute_fn_dabba, execute_on_referaly
+
+from data import execute_on_referaly
+
 
 def get_user_data(coupons=None, days_past=None, today=None, debug=False):
     referally = get_user_data_from_referally(coupons, days_past, today, debug)
     footer = get_user_data_from_footer(coupons, days_past, today, debug)
     res = referally + footer
     for row in res:
-        row[2] = row[2].replace('\n','').replace('\r','')
+        row[2] = row[2].replace('\n', '').replace('\r', '')
     return res
+
 
 def get_user_data_from_footer(coupons=None, days_past=None, today=None, debug=False):
     return []
+
 
 def get_user_data_from_referally(coupons=None, days_past=None, today=None, debug=False):
     if not today:

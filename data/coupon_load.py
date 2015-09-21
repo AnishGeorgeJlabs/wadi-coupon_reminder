@@ -1,9 +1,11 @@
-from data import execute_fn_dabba, execute_on_referaly
-import requests
 from datetime import datetime, timedelta
-import json
+
+import requests
+
+from data import execute_fn_dabba
 from phpserialize import unserialize
 from user_data import get_user_data
+
 
 def get_data(debug=False, days_past=None, days_left=None, today=None):
     if not days_past and not days_left:
@@ -16,13 +18,9 @@ def get_data(debug=False, days_past=None, days_left=None, today=None):
         record += cdata[record[2]]
 
     final_users = filter(lambda k: len(k) > 0,
-                   map(_transform, users))
-
-    if days_left:
-        target_date = get_target_date(days_left)
-    else:
-        target_date = None
+                         map(_transform, users))
     return _convert_data(final_users)
+
 
 def get_days():
     """ Get the number of days configuration from external server """
@@ -38,9 +36,11 @@ def get_days():
         else:
             return int(data['value'])
 
+
 def get_target_date(days):
     """ Simple function to get the target expiry date """
     return datetime.now() + timedelta(days=days)
+
 
 def get_codes(days_left=None, debug=False, today=None):
     """
@@ -94,7 +94,7 @@ def _transform(record):
     :param record:
     :return:
     """
-    res = record[:2]   # [email, language]
+    res = record[:2]  # [email, language]
     cdata = record[2:]  # [ 0:code, 1:currency, 2:discount type, 3:amount, 4:percentage, 5:conditions, 6: date
 
     currency = cdata[1]
@@ -116,7 +116,7 @@ def _transform(record):
         'code': cdata[0],
         'amount': amt,
         'total': subtotal,
-	'date': cdata[6]
+        'date': cdata[6]
     })
     return res
 
@@ -132,7 +132,7 @@ def _convert_data(records):
     res = {}
     for record in records:
         email = record[0]
-	date = record[2].pop('date')
+        date = record[2].pop('date')
         if email in res:
             res[email]['coupons'].append(record[2])
             if res[email]['date'] > date:
