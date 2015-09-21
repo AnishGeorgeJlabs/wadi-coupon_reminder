@@ -12,6 +12,7 @@ def _local_file(name):
     filename = os.path.join(cdir, name)
     return filename
 
+
 def _get_worksheet():
     storage = Storage(_local_file("creds.data"))
     credentials = storage.get()
@@ -27,9 +28,29 @@ def _get_worksheet():
 
     return gc.open_by_key('144fuYSOgi8md4n2Ezoj9yNMi6AigoXrkHA9rWIF0EDw')
 
+
 def get_reminder_sheet():
     return _get_worksheet().get_worksheet(1)
+
 
 def get_days_remaining():
     sheet = get_reminder_sheet()
     return [int(x[1]) for x in sheet.get_all_values()[1:] if x[0] == 'Coupon Reminder']
+
+
+def get_days_from_sheet():
+    sheet = get_reminder_sheet()
+
+    def mapper(obj):
+        try:
+            return int(obj)
+        except:
+            return None
+
+    return filter(
+        lambda k: k[0] and k[1],
+        [
+            map(mapper, x[1:])
+            for x in sheet.get_all_values()[1:] if x[0] == 'Coupon Reminder'
+        ]
+    )

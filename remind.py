@@ -7,7 +7,7 @@ import logging
 
 from jinja2 import Environment, PackageLoader
 from data.email import send_mail
-from data.external.sheet import get_days_remaining
+from data.external.sheet import get_days_from_sheet
 
 logging.basicConfig(filename='./log', level=logging.DEBUG)
 
@@ -107,7 +107,7 @@ def _block_filter(data):
 if __name__ == '__main__':
     from data.coupon_load import get_data
 
-    days = get_days_remaining()
-    for day in days:
-        data = get_data(days_left=day)
+    config = get_days_from_sheet()
+    for dc in config:
+        data = get_data(days_left=dc[0], days_past=dc[1])
         run(_block_filter(data))
