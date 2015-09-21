@@ -128,7 +128,7 @@ def get_codes(days_left=None, debug=False, today=None):
 
     base_query = """
     SELECT sr.code, sr.discount_amount_currency,
-           srs.discount_type, srs.discount_amount_default, srs.discount_percentage, srs.conditions_ruleset
+           srs.discount_type, srs.discount_amount_default, srs.discount_percentage, srs.conditions_ruleset, sr.to_date
     FROM sales_rule sr INNER JOIN sales_rule_set srs ON sr.fk_sales_rule_set = srs.id_sales_rule_set
     WHERE sr.is_active = 1 AND datediff(DATE(sr.to_date), '%s') >= 7
     """ % td
@@ -167,7 +167,7 @@ def _transform(record):
     :return:
     """
     res = record[:2]   # [email, language]
-    cdata = record[2:]  # [ 0:code, 1:currency, 2:discount type, 3:amount, 4:percentage, 5:conditions
+    cdata = record[2:]  # [ 0:code, 1:currency, 2:discount type, 3:amount, 4:percentage, 5:conditions, 6: date
 
     currency = cdata[1]
     try:
@@ -187,7 +187,8 @@ def _transform(record):
     res.append({
         'code': cdata[0],
         'amount': amt,
-        'total': subtotal
+        'total': subtotal,
+	'date': cdata[6]
     })
 
     return res
@@ -204,11 +205,15 @@ def _convert_data(records):
     res = {}
     for record in records:
         email = record[0]
+	date = record[2].pop('date')
         if email in res:
             res[email]['coupons'].append(record[2])
+            if res[email]['date'] > date:
+                res[email]['date'] = date
         else:
             res[email] = {
                 'language': record[1],
-                'coupons': [record[2]]
+                'coupons': [record[2]],
+                'date': date
             }
     return res
