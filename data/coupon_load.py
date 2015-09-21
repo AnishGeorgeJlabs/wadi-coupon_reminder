@@ -58,7 +58,7 @@ def get_codes(days_left=None, debug=False, today=None):
     SELECT sr.code, sr.discount_amount_currency,
            srs.discount_type, srs.discount_amount_default, srs.discount_percentage, srs.conditions_ruleset, sr.to_date
     FROM sales_rule sr INNER JOIN sales_rule_set srs ON sr.fk_sales_rule_set = srs.id_sales_rule_set
-    WHERE sr.is_active = 1 AND datediff(DATE(sr.to_date), '%s') >= 7
+    WHERE sr.is_active = 1
     """ % td
 
     if days_left:
@@ -67,6 +67,8 @@ def get_codes(days_left=None, debug=False, today=None):
         else:
             max_date = '2015-05-31'
         base_query += " AND DATE(sr.to_date) LIKE '%s'" % max_date
+    else:
+        base_query += " AND datediff(DATE(sr.to_date), '%s') >= 7"
 
     table = execute_fn_dabba("bob_live_sa")(base_query)
     table += execute_fn_dabba("bob_live_ae")(base_query)
