@@ -140,8 +140,8 @@ def get_codes(days_left=None, debug=False, today=None):
             max_date = '2015-05-31'
         base_query += " AND DATE(sr.to_date) LIKE '%s'" % max_date
 
-    table = execute_fn_dabba("bob_live_sa")(query)
-    table += execute_fn_dabba("bob_live_ae")(query)
+    table = execute_fn_dabba("bob_live_sa")(base_query)
+    table += execute_fn_dabba("bob_live_ae")(base_query)
 
     codes = map(lambda k: k[0], table)
     coupon_dict = {}
