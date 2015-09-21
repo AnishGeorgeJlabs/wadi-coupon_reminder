@@ -3,8 +3,28 @@ import requests
 from datetime import datetime, timedelta
 import json
 from phpserialize import unserialize
+from user_data import get_user_data
 
+def get_data(debug=False, days_past=None, days_left=None, today=None):
+    if not days_past and not days_left:
+        return {}, None
 
+    codes, cdata = get_codes(days_left=days_left, debug=debug, today=today)
+    users = get_user_data(coupons=codes, days_past=days_past, today=today)
+
+    for record in users:
+        record += cdata[record[2]]
+
+    final_users = filter(lambda k: len(k) > 0,
+                   map(_transform, users))
+
+    if days_left:
+        target_date = get_target_date(days_left)
+    else:
+        target_date = None
+    return _convert_data(final_users), target_date
+
+'''
 def get_data(debug=False, fix_days=None):
     """
     Master function, get a dictionary of emails against codes data
@@ -27,10 +47,6 @@ def get_data(debug=False, fix_days=None):
     REPLACE(REPLACE(wadi_v1_coupons.coupon, '\r', ''), '\n', '')
     IN ('%s') order by users.id""" % (c_list)
 
-    '''
-    Columns:
-    email | language | coupon
-    '''
 
     if debug is True:
         query += " limit 20"
@@ -44,6 +60,7 @@ def get_data(debug=False, fix_days=None):
                    map(_transform, rdata))
 
     return _convert_data(rdata), get_target_date(days)
+'''
 
 
 def get_days():
@@ -64,6 +81,7 @@ def get_target_date(days):
     """ Simple function to get the target expiry date """
     return datetime.now() + timedelta(days=days)
 
+'''
 def get_codes(days, debug=False):
     """
     Get the codes data from bob_live_sa and ae
@@ -84,6 +102,43 @@ def get_codes(days, debug=False):
     FROM sales_rule sr INNER JOIN sales_rule_set srs ON sr.fk_sales_rule_set = srs.id_sales_rule_set
     WHERE sr.is_active = 1 AND DATE(sr.to_date) LIKE '%s'
     """ % max_date
+
+    table = execute_fn_dabba("bob_live_sa")(query)
+    table += execute_fn_dabba("bob_live_ae")(query)
+
+    codes = map(lambda k: k[0], table)
+    coupon_dict = {}
+    for row in table:
+        coupon_dict[row[0]] = row[1:]
+
+    return codes, coupon_dict
+'''
+
+def get_codes(days_left=None, debug=False, today=None):
+    """
+    :param days_left: The expiry date of the coupon, if not present, returns all coupons who have a week or more to expire,
+                      which will be used in the case of one week after signup situation
+    :param debug:
+    :param today:
+    :return:
+    """
+    if not today:
+        today = datetime.now()
+    td = today.strftime("%Y-%m-%d")
+
+    base_query = """
+    SELECT sr.code, sr.discount_amount_currency,
+           srs.discount_type, srs.discount_amount_default, srs.discount_percentage, srs.conditions_ruleset
+    FROM sales_rule sr INNER JOIN sales_rule_set srs ON sr.fk_sales_rule_set = srs.id_sales_rule_set
+    WHERE sr.is_active = 1 AND datediff(DATE(sr.to_date), '%s') >= 7
+    """ % td
+
+    if days_left:
+        if not debug:
+            max_date = get_target_date(days_left).strftime('%Y-%m-%d')
+        else:
+            max_date = '2015-05-31'
+        base_query += " AND DATE(sr.to_date) LIKE '%s'" % max_date
 
     table = execute_fn_dabba("bob_live_sa")(query)
     table += execute_fn_dabba("bob_live_ae")(query)
