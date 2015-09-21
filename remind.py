@@ -27,36 +27,28 @@ def dtStylish(dt, f):
 
 
 
-def run(data, target_date, subject="Coupon Reminder (Wadi)"):
-    dt = dtStylish(target_date, "{th} %B, %Y")
+def run(data, subject="Coupon Reminder (Wadi)"):
     success = 0
     failure = 0
-    for email_id, user_data in data.items():
+    for user_data in data:
+        dt = dtStylish(user_data['date'], "{th} %B, %Y")
         if user_data['language'] == 'english':
             template = template_en
         else:
             template = template_ar
         content = template.render(coupons=user_data['coupons'], target=dt)
-        res = send_mail(email_id=email_id, subject=subject, body=content)
+        res = send_mail(email_id=user_data['email'], subject=subject, body=content)
         if int(res[0]) == 200:
             success += 1
         else:
             failure += 1
-    '''
-    for email_id, coupons in data.items():
-        content = template.render(coupons=coupons, target=dt)
-        res = send_mail(email_id=email_id, subject=subject, body=content)
-        if int(res[0]) == 200:
-            success += 1
-        else:
-            failure += 1
-    '''
     logging.info("Report - %s - Success: %i, Failure: %i" % (datetime.now().strftime("%d/%m/%Y"), success, failure))
 
 
 def test():
-    data = {
-        'anish.george@jlabs.co': {
+    data = [
+        {
+            'email': 'anish.george@jlabs.co',
             'language': 'arabic',
             'coupons': [
                 {
@@ -64,42 +56,45 @@ def test():
                     'amount': '100 AED',
                     'total': '500 AED'
                 }
-            ]
+            ],
+            'date': datetime.now()
         }
-    }
-    run(data, datetime.now() + timedelta(days=7), "Test1 coupon reminder")
+    ]
+    run(data, "Test1 coupon reminder")
 
 
 def beta_test():
     from data.coupon_load import get_data
 
-    init_data, d = get_data(True)
+    init_data = get_data(True)
     if len(init_data.keys()) == 0:
         print "Zero data for debugging"
     else:
-        final_data = {
-            'anish.george@jlabs.co': init_data[init_data.keys()[0]]
-        }
-        run(final_data, datetime.now() + timedelta(days=20), "Beta testing, coupon reminder")
+        init_data[0]['email'] = 'anish.george@jlabs.co'
+        run(init_data[:1], "Beta testing, coupon reminder")
 
 
 def final_test(emails):
     from data.coupon_load import get_data
 
-    init_data, d = get_data(True)
+    init_data = get_data(True)
     n = len(emails) if len(emails) <= len(init_data) else len(init_data)
     if n == 0:
         print "No data !!!!"
         return False
 
-    final_data = {}
+    final_data = []
     for i in range(n):
-        final_data[emails[i]] = init_data[i]
+        init_data[i]['email'] = emails[i]
+        final_data.append(init_data[i])
 
     if n < len(emails):
         for email in emails[n:]:
-            final_data[email] = init_data[0]
-    run(final_data, d, "Coupon reminder final test")
+            d = init_data[0].copy()
+            d['email'] = email
+            final_data.append(d)
+
+    run(final_data, "Coupon reminder final test")
     return True
 
 
@@ -113,5 +108,5 @@ if __name__ == '__main__':
 
     days = get_days_remaining()
     for day in days:
-        data, tm = get_data(days_left=day)
-        run(_block_filter(data), tm)
+        data = get_data(days_left=day)
+        run(_block_filter(data))
