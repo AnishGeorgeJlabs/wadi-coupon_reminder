@@ -99,15 +99,11 @@ def final_test(emails):
     return True
 
 
-def _block_filter(data):
-    # Unimplemented
-    return data
-
-
 if __name__ == '__main__':
     from data.coupon_load import get_data
+    from data.block.blocking import block_filter
 
     config = get_days_from_sheet()
     for dc in config:
         data = get_data(days_left=dc[0], days_past=dc[1])
-        run(_block_filter(data))
+        run(block_filter(data))
