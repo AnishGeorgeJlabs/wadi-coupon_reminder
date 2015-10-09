@@ -75,7 +75,7 @@ def beta_test():
         run(init_data[:1], "Beta testing, coupon reminder")
 
 
-def final_test(emails):
+def final_test(emails, language=None):
     from data.coupon_load import get_data
 
     init_data = get_data(True)
@@ -87,12 +87,16 @@ def final_test(emails):
     final_data = []
     for i in range(n):
         init_data[i]['email'] = emails[i]
+        if language:
+            init_data[i]['language'] = language
         final_data.append(init_data[i])
 
     if n < len(emails):
         for email in emails[n:]:
             d = init_data[0].copy()
             d['email'] = email
+            if language:
+                d['language'] = language
             final_data.append(d)
 
     run(final_data, "Coupon reminder final test")
