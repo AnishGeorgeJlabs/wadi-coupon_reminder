@@ -78,7 +78,7 @@ def beta_test():
 def final_test(emails, language=None):
     from data.coupon_load import get_data
 
-    init_data = get_data(True)
+    init_data = get_data(debug=True, days_left=5)
     n = len(emails) if len(emails) <= len(init_data) else len(init_data)
     if n == 0:
         print "No data !!!!"
